@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Box, Center, Spinner, Text } from '@chakra-ui/react'
-import { supabase, type Photo } from '@/lib/supabase'
+import { supabase, getPublicUrl, type Photo } from '@/lib/supabase'
 import { MapView, type MapPhoto } from '@/components/MapView'
 import { BottomNav } from '@/components/BottomNav'
 
@@ -35,22 +35,15 @@ function MapContent() {
       return
     }
 
-    const photosWithUrls = await Promise.all(
-      data
-        .filter((p: Photo) => p.lat !== null && p.lng !== null)
-        .map(async (photo: Photo) => {
-          const { data: urlData } = await supabase.storage
-            .from('photos')
-            .createSignedUrl(photo.storage_path, 3600)
-          return {
-            id: photo.id,
-            lat: photo.lat!,
-            lng: photo.lng!,
-            imageUrl: urlData?.signedUrl ?? '',
-            diaryText: photo.diary_text,
-          }
-        })
-    )
+    const photosWithUrls = data
+      .filter((p: Photo) => p.lat !== null && p.lng !== null)
+      .map((photo: Photo) => ({
+        id: photo.id,
+        lat: photo.lat!,
+        lng: photo.lng!,
+        imageUrl: getPublicUrl(photo.storage_path),
+        diaryText: photo.diary_text,
+      }))
 
     setMapPhotos(photosWithUrls)
     setLoading(false)

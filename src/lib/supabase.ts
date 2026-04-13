@@ -64,6 +64,10 @@ export const supabase = isDemoMode
   ? (createMockClient() as unknown as ReturnType<typeof createClient>)
   : createClient(supabaseUrl, supabaseAnonKey)
 
+export function getPublicUrl(storagePath: string): string {
+  return `${supabaseUrl}/storage/v1/object/public/photos/${storagePath}`
+}
+
 export function createAuthClient(accessToken: string) {
   if (isDemoMode) {
     return createMockClient() as unknown as ReturnType<typeof createClient>

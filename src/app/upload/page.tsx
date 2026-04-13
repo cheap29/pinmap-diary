@@ -215,7 +215,7 @@ export default function UploadPage() {
       }
 
 
-      const resized = await resizeImage(selectedFile);
+      const resized = await resizeImage(selectedFile, 1200);
       const formData = new FormData();
       formData.append("file", resized);
       if (clientTakenAt) formData.append("takenAt", clientTakenAt);

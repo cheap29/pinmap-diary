@@ -11,7 +11,7 @@ import {
   addMonths, subMonths,
 } from "date-fns";
 import { ja } from "date-fns/locale";
-import { supabase, createAuthClient, type Photo } from "@/lib/supabase";
+import { supabase, createAuthClient, getPublicUrl, type Photo } from "@/lib/supabase";
 import { PhotoCard } from "@/components/PhotoCard";
 import { BottomNav } from "@/components/BottomNav";
 
@@ -37,13 +37,10 @@ export default function CalendarPage() {
 
     if (!data) { setLoading(false); return; }
 
-    const withUrls = await Promise.all(
-      data.map(async (photo: Photo) => {
-        const { data: urlData } = await supabase.storage
-          .from("photos").createSignedUrl(photo.storage_path, 3600);
-        return { ...photo, imageUrl: urlData?.signedUrl ?? "" };
-      })
-    );
+    const withUrls = data.map((photo: Photo) => ({
+      ...photo,
+      imageUrl: getPublicUrl(photo.storage_path),
+    }));
     setPhotos(withUrls);
     setLoading(false);
   }, [router]);

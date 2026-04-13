@@ -6,7 +6,7 @@ import { Box, Center, Spinner, Text, VStack } from "@chakra-ui/react";
 import { AppHeader } from "@/components/AppHeader";
 import { format, parseISO } from "date-fns";
 import { ja } from "date-fns/locale";
-import { supabase, createAuthClient, type Photo } from "@/lib/supabase";
+import { supabase, createAuthClient, getPublicUrl, type Photo } from "@/lib/supabase";
 import { PERSONAS, type PersonaKey } from "@/lib/personas";
 import { PhotoCard } from "@/components/PhotoCard";
 import { BottomNav } from "@/components/BottomNav";
@@ -65,14 +65,10 @@ export default function TimelinePage() {
       return;
     }
 
-    const photosWithUrls = await Promise.all(
-      data.map(async (photo: Photo) => {
-        const { data: urlData } = await supabase.storage
-          .from("photos")
-          .createSignedUrl(photo.storage_path, 3600);
-        return { ...photo, imageUrl: urlData?.signedUrl ?? "" };
-      }),
-    );
+    const photosWithUrls = data.map((photo: Photo) => ({
+      ...photo,
+      imageUrl: getPublicUrl(photo.storage_path),
+    }));
     setPhotos(photosWithUrls);
     setLoading(false);
   }, [router]);
