@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Box, Center, Spinner, Text } from '@chakra-ui/react'
 import { supabase, type Photo } from '@/lib/supabase'
 import { MapView, type MapPhoto } from '@/components/MapView'
 import { BottomNav } from '@/components/BottomNav'
 
-export default function MapPage() {
+function MapContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mapPhotos, setMapPhotos] = useState<MapPhoto[]>([])
@@ -102,5 +102,13 @@ export default function MapPage() {
 
       <BottomNav />
     </Box>
+  )
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={<Center h="100vh"><Spinner size="lg" color="brand.500" /></Center>}>
+      <MapContent />
+    </Suspense>
   )
 }
