@@ -29,7 +29,6 @@ export function BottomNav() {
         bg="brand.500"
         color="white"
         shadow="lg"
-        display="flex"
         alignItems="center"
         justifyContent="center"
         zIndex={200}

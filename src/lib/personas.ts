@@ -142,3 +142,5 @@ export const PERSONAS = {
 `,
   },
 } as const;
+
+export type PersonaKey = keyof typeof PERSONAS;
