@@ -197,18 +197,18 @@ export default function UploadPage() {
       try {
         const exifrMod = await import("exifr");
         const exifr = exifrMod.default ?? exifrMod;
-        const parsed = await exifr.parse(selectedFile, ["DateTimeOriginal"]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const parsed = await (exifr.parse as any)(selectedFile, { tiff: true, exif: true, gps: true });
+        console.log("[EXIF] parsed:", parsed);
         if (parsed?.DateTimeOriginal) {
           clientTakenAt = new Date(parsed.DateTimeOriginal).toISOString();
         }
-        const gps = await exifr.gps(selectedFile);
-        console.log("[EXIF] takenAt:", clientTakenAt, "gps:", gps);
-        if (gps?.latitude != null && gps?.longitude != null) {
-          clientLat = String(gps.latitude);
-          clientLng = String(gps.longitude);
+        if (parsed?.latitude != null && parsed?.longitude != null) {
+          clientLat = String(parsed.latitude);
+          clientLng = String(parsed.longitude);
           console.log("[EXIF] GPS取得成功:", clientLat, clientLng);
         } else {
-          console.warn("[EXIF] GPS未取得 - この写真にはGPSデータがない可能性があります");
+          console.warn("[EXIF] GPS未取得:", parsed);
         }
       } catch (e) {
         console.warn("[EXIF] 抽出失敗:", e);
